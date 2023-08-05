@@ -4,6 +4,8 @@ import LoverboyContract from '../../components/abi/Loverboy.js'; // Replace with
 import "../../components/Styles/mintingDappStyles.css";
 import boyloverImage from '../../Assets/boylover.JPG'; // Import the image
 import bannerImage from '../../Assets/Enemigoz.JPG'; // Import the image
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const MintingDapp = () => {
   const [web3, setWeb3] = useState(null);
@@ -11,10 +13,11 @@ const MintingDapp = () => {
   const [account, setAccount] = useState(null);
   const [mintAmount, setMintAmount] = useState(1);
   const [saleType, setSaleType] = useState('public'); // Default to public sale
+  const [isLoading, setLoading] = useState(false);
+  const [transactionHash, setTransactionHash] = useState(null);
 
   const contractAddress = '0x83F00B6578Ba7b3f39223A0e2Fe0d5dbF415E737'; // Replace with your deployed contract address
   const contractABI = LoverboyContract;
-
 
   useEffect(() => {
     const initializeWeb3 = async () => {
@@ -46,13 +49,29 @@ const MintingDapp = () => {
         } else if (saleType === 'remilia') {
           maxMintAmount = 10;
         }
-  
+
         // Check if the selected mint amount exceeds the maximum allowed
         if (mintAmount > maxMintAmount) {
-          console.error(`Exceeded maximum allowed mint amount (${maxMintAmount}) for the selected sale type.`);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Exceeded maximum allowed mint amount (${maxMintAmount}) for the selected sale type.`,
+          });
           return;
         }
-  
+
+        Swal.fire({
+          title: 'Minting in progress...',
+          html: 'Please wait while the transaction is being processed.',
+          allowOutsideClick: false,
+          onBeforeOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        setLoading(true); // Show loading alert
+        setTransactionHash(null); // Reset transaction hash
+
         let costInWei;
         if (saleType === 'public') {
           costInWei = web3.utils.toWei((mintAmount * 0.05).toString(), 'ether');
@@ -61,13 +80,15 @@ const MintingDapp = () => {
         } else if (saleType === 'remilia') {
           costInWei = web3.utils.toWei((mintAmount * 0.02).toString(), 'ether');
         }
-  
+
         // Use the correct function based on the sale type
         if (saleType === 'public') {
-          await contract.methods.publicMint(mintAmount).send({
+          const transaction = await contract.methods.publicMint(mintAmount).send({
             from: account,
             value: costInWei,
           });
+
+          setTransactionHash(transaction.transactionHash);
         } else if (saleType === 'whitelist') {
           await contract.methods.whitelistMint(mintAmount).send({
             from: account,
@@ -79,13 +100,27 @@ const MintingDapp = () => {
             value: costInWei,
           });
         }
-  
-        console.log('Minting successful!');
+
+        setLoading(false); // Hide loading alert
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Minting successful!',
+        });
       }
     } catch (error) {
       console.error('Error while minting:', error);
+      setLoading(false); // Hide loading alert
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Error while minting. Please try again later.',
+      });
     }
   };
+
   // Calculate minting prices for each option
   const mintingPrices = {
     public: mintAmount * 0.05,
@@ -104,14 +139,11 @@ const MintingDapp = () => {
   }
 
   return (
-    
     <div>
-    <img src={bannerImage} alt="NFT Placeholder" className='banner' />
+      <img src={bannerImage} alt="NFT Placeholder" className='banner' />
 
-    <div className="container">
-      
-      {/* <h1 className="heading">Minting Dapp</h1> */}
-      {account && (
+      <div className="container">
+        {account && (
           <div className="account-container">
             <p className="account">Connected account: {account}</p>
           </div>
@@ -124,20 +156,23 @@ const MintingDapp = () => {
         </select>
         <img src={boyloverImage} alt="NFT Placeholder" className='image' />
 
+        <input
+          type="number"
+          min="1"
+          max={maxMintAmount}
+          value={mintAmount}
+          onChange={(e) => setMintAmount(parseInt(e.target.value))}
+        />
+        <button onClick={handleMint} disabled={isLoading || mintAmount > maxMintAmount}>
+          {isLoading ? 'Minting in Progress...' : `Mint ${mintAmount} NFTs`}
+        </button>
+        {transactionHash && (
+          <p className="transaction-hash">
+            Transaction Hash: <a href={`https://etherscan.io/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer">{transactionHash}</a>
+          </p>
+        )}
       </div>
-
-      <input
-        type="number"
-        min="1"
-        max={maxMintAmount}
-        value={mintAmount}
-        onChange={(e) => setMintAmount(parseInt(e.target.value))}
-      />
-      <button onClick={handleMint} disabled={mintAmount > maxMintAmount}>
-        Mint {mintAmount} NFTs
-      </button>
     </div>
-    
   );
 };
 
