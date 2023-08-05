@@ -1,0 +1,117 @@
+/* mintingDapp.css */
+
+body {
+    background-color: #9FA1EF;
+}
+  
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 10px;
+}
+  
+.heading {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.account-container {
+    border: 1px solid red;
+    background-color: rgba(255, 0, 0, 0.1); /* Transparent red background color */
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+}
+  
+.account {
+    margin-bottom: 20px;
+}
+  
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+  
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input {
+    width: 10%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-left: 44%;
+
+}
+
+button {
+    display: block;
+    width: 20%;
+    padding: 12px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 41%;
+    margin-bottom: 20px;
+
+
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Add a subtle box shadow to the image */
+.image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle box shadow */
+    margin-left: 15%;
+    
+}
+
+.banner {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-left: 30%;
+    margin-top: 20px;
+}
+  
+/* Media query for mobile devices */
+@media screen and (max-width: 480px) {
+    .account-container {
+        width: 90%;
+        max-width: 100%;
+    }
+
+    button {
+        margin-left: 0;
+    }
+
+    .image, .banner {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
