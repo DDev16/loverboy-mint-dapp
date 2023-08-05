@@ -35,7 +35,7 @@ const MintingDapp = () => {
     };
 
     initializeWeb3();
-  }, []);
+  }, [contractABI.abi]); 
 
   const handleMint = async () => {
     try {
