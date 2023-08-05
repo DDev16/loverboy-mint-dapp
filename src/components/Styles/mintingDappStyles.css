@@ -61,7 +61,7 @@ input {
 
 button {
     display: block;
-    width: 20%;
+    width: 100%;
     padding: 12px;
     background: #4CAF50;
     color: white;
@@ -70,7 +70,7 @@ button {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    margin-left: 41%;
+    margin-left: 0%;
     margin-bottom: 20px;
 
 
@@ -90,6 +90,36 @@ button:disabled {
     margin-left: 15%;
     
 }
+/* Add this to your CSS file or inside a <style> tag in your component */
+.connect-wallet-container {
+    width: 20%;
+    margin-left: 750px;
+    background-color: #e6ccff; /* Light purple background color */
+    padding: 20px; /* Add some padding to the container */
+    border-radius: 8px; /* Add a rounded border to give a softer look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+/* Add styles for the button inside the container */
+.connect-wallet-container button {
+    background-color: #a18fff; /* Slightly darker shade of light purple for the button */
+    color: #fff; /* White text color */
+    border: none; /* Remove the button border */
+    border-radius: 4px; /* Add a slight border radius to the button */
+    padding: 10px 20px; /* Add padding to the button */
+    font-size: 16px; /* Set font size */
+    cursor: pointer; /* Change cursor to a pointer on hover */
+    transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+/* Add hover effect for the button */
+.connect-wallet-container button:hover {
+    background-color: #7b5fb2; /* Darker shade of light purple on hover */
+}
+
+ 
+  
 
 .banner {
     max-width: 100%;

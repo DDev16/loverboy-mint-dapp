@@ -11,6 +11,7 @@ const MintingDapp = () => {
   const [web3, setWeb3] = useState(null);
   const [contract, setContract] = useState(null);
   const [account, setAccount] = useState(null);
+  const [walletConnected, setWalletConnected] = useState(false); // New state variable for wallet connection
   const [mintAmount, setMintAmount] = useState(1);
   const [saleType, setSaleType] = useState('public'); // Default to public sale
   const [isLoading, setLoading] = useState(false);
@@ -36,6 +37,28 @@ const MintingDapp = () => {
 
     initializeWeb3();
   }, [contractABI.abi]); 
+
+   // Function to connect the wallet
+  const connectWallet = async () => {
+    try {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+        setWeb3(web3);
+
+        const contract = new web3.eth.Contract(contractABI.abi, contractAddress);
+        setContract(contract);
+
+        const accounts = await web3.eth.getAccounts();
+        setAccount(accounts[0]);
+        setWalletConnected(true);
+      }
+    } catch (error) {
+      console.error('Error while connecting wallet:', error);
+    }
+  };
+
+
 
   const handleMint = async () => {
     try {
@@ -138,40 +161,47 @@ const MintingDapp = () => {
     maxMintAmount = 10;
   }
 
+  
   return (
     <div>
       <img src={bannerImage} alt="NFT Placeholder" className='banner' />
 
-      <div className="container">
-        {account && (
-          <div className="account-container">
-            <p className="account">Connected account: {account}</p>
-          </div>
-        )}
-        <label htmlFor="saleType">Select Sale Type:</label>
-        <select id="saleType" value={saleType} onChange={(e) => setSaleType(e.target.value)}>
-          <option value="public">Public Sale - Cost: {mintingPrices.public} ETH</option>
-          <option value="whitelist">Whitelist Sale - Cost: {mintingPrices.whitelist} ETH</option>
-          <option value="remilia">Discount Sale - Cost: {mintingPrices.discount} ETH</option>
-        </select>
-        <img src={boyloverImage} alt="NFT Placeholder" className='image' />
+      {walletConnected ? ( // Show the minting dApp container if the wallet is connected
+        <div className="container">
+          {account && (
+            <div className="account-container">
+              <p className="account">Connected account: {account}</p>
+            </div>
+          )}
+          <label htmlFor="saleType">Select Sale Type:</label>
+          <select id="saleType" value={saleType} onChange={(e) => setSaleType(e.target.value)}>
+            <option value="public">Public Sale - Cost: {mintingPrices.public} ETH</option>
+            <option value="whitelist">Whitelist Sale - Cost: {mintingPrices.whitelist} ETH</option>
+            <option value="remilia">Discount Sale - Cost: {mintingPrices.discount} ETH</option>
+          </select>
+          <img src={boyloverImage} alt="NFT Placeholder" className='image' />
 
-        <input
-          type="number"
-          min="1"
-          max={maxMintAmount}
-          value={mintAmount}
-          onChange={(e) => setMintAmount(parseInt(e.target.value))}
-        />
-        <button onClick={handleMint} disabled={isLoading || mintAmount > maxMintAmount}>
-          {isLoading ? 'Minting in Progress...' : `Mint ${mintAmount} NFTs`}
-        </button>
-        {transactionHash && (
-          <p className="transaction-hash">
-            Transaction Hash: <a href={`https://etherscan.io/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer">{transactionHash}</a>
-          </p>
-        )}
-      </div>
+          <input
+            type="number"
+            min="1"
+            max={maxMintAmount}
+            value={mintAmount}
+            onChange={(e) => setMintAmount(parseInt(e.target.value))}
+          />
+          <button onClick={handleMint} disabled={isLoading || mintAmount > maxMintAmount}>
+            {isLoading ? 'Minting in Progress...' : `Mint ${mintAmount} NFTs`}
+          </button>
+          {transactionHash && (
+            <p className="transaction-hash">
+              Transaction Hash: <a href={`https://etherscan.io/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer">{transactionHash}</a>
+            </p>
+          )}
+        </div>
+      ) : ( // Show the "Connect Wallet" button if the wallet is not connected
+        <div className="connect-wallet-container">
+          <button onClick={connectWallet}>Connect Wallet</button>
+        </div>
+      )}
     </div>
   );
 };
